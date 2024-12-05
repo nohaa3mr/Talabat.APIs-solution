@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
 using Talabat.Core.Interfaces;
+using Talabat.Core.Specifications;
 using Talabat.Repositories.Data;
 
 namespace Talabat.Repositories.Interfaces.Contract
@@ -23,10 +24,25 @@ namespace Talabat.Repositories.Interfaces.Contract
          return  await _dbContext.Set<T>().ToListAsync();
             
         }
-
         public async Task<T> GetById(int id)
         {
             return await _dbContext.Set<T>().FindAsync(id);  //using hashsets as unique key 
         }
+        public async Task<IEnumerable<T>> GetAllWithSpec(ISpecifications<T> spec)
+        {
+            return await ApplySpec(spec).ToListAsync();//to convert it to IEnumerable;
+        }
+
+        public async Task<T> GetProductByIdWithSpec(ISpecifications<T> spec)
+        {
+           return await ApplySpec(spec).FirstOrDefaultAsync();
+        }
+        private  IQueryable<T> ApplySpec(ISpecifications<T>spec)
+        {
+            return SpecificationsEvaluator<T>.QueryEvaluator(_dbContext.Set<T>(), spec);
+        }
+        
+       
+
     }
 }
