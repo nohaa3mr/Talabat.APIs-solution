@@ -17,8 +17,17 @@ namespace Talabat.Core.Specifications
             if (specifications.Criteria is not null)
             {
                 Query = Query.Where(specifications.Criteria);    
-            }     
-           Query = specifications.Includes.Aggregate(Query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
+            }
+
+            if (specifications.OrderByAsc is not null)
+            {
+                Query = Query.OrderBy(specifications.OrderByAsc);
+            }
+            if (specifications.OrderByDecs is not null)
+            {
+                Query = Query.OrderByDescending(specifications.OrderByDecs);
+            }
+            Query = specifications.Includes.Aggregate(Query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
 
             return Query;
         }

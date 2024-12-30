@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,21 +41,51 @@ namespace Talabat.Repositories.Data.DataSeed
                 }
             }
 
-              if (!dbContext.Products.Any()) 
-              { 
-            var ProductData = File.ReadAllText("../Talabat.Repositories/Data/DataSeed/products.json");
-            var products = JsonSerializer.Deserialize<List<Product>>(ProductData);
-              if (products?.Count > 0)
-              {
-                foreach (var product in products)
+            #region !st try
+            //if (!dbContext.Products.Any())
+            //{
+            //    var ProductData = File.ReadAllText("../Talabat.Repositories/Data/DataSeed/products.json");
+            //    var products = JsonSerializer.Deserialize<List<Product>>(ProductData);
+                //if (products?.Count > 0)
+                //{
+                //  foreach (var product in products)
+                //  {
+                //          //product.Discription = product.Discription ?? "No description available";
+                //          //product.PictureURL = product.Discription ?? " PictureURL isn't available";
+                //          await dbContext.Set<Product>().AddAsync(product);
+                //  }
+                //  await dbContext.SaveChangesAsync();
+                //}
+                //3.Seed DataBase
+                //if (products is not null && products?.Count > 0)
+                //{
+                //    await dbContext.AddRangeAsync(products);
+                //    await dbContext.SaveChangesAsync();
+                //}
+          //  }
+            #endregion
+            if (dbContext.Products.Count() == 0)
+            {
+                //1.Read All Data From Json File.
+                var ProductData = File.ReadAllText("../Talabat.Repositories/Data/DataSeed/products.json");
+
+
+                //2. Convert Data from Json to List<T>
+                var products = JsonSerializer.Deserialize<List<Product>>(ProductData);
+                //3.Seed DataBase
+                if (products is not null && products?.Count > 0)
                 {
-                        product.Discription = product.Discription ?? "No description available";
-                        product.PictureURL = product.Discription ?? " PictureURL isn't available";
-                        await dbContext.Set<Product>().AddAsync(product);
+                    foreach (var product in products)
+                    { 
+                                product.Discription = product.Discription ?? "No description available";
+                             product.PictureURL = product.Discription ?? " PictureURL isn't available";
+                               await dbContext.Set<Product>().AddAsync(product);
+                     }
+
+                        await dbContext.AddRangeAsync(products);
+                    await dbContext.SaveChangesAsync();
                 }
-                await dbContext.SaveChangesAsync();
-              }
-              }
             }
+        }
     }
 }

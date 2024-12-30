@@ -15,24 +15,24 @@ namespace Talabat.Apis.Controllers
             _dbContext = dbContext;
         }
         [HttpGet("NotFound")]
-        public ActionResult GetNotFound(int id)
+        public ActionResult GetNotFound()
         {
             var products = _dbContext.Products.Find(100);
-            if (products is null) return NotFound(new ErrorApiResponse(400));
+            if (products is null) return NotFound(new ErrorApiResponse(404));
             return Ok(products);
         }
 
-        //[HttpGet("ServerError")]
-        //public ActionResult GetInternalServerError()
-        //{
-        //    var products = _dbContext.Products.Find(100);
-        //    var productToReturn = products.ToString(); //will throw an exception
-        //    return Ok(productToReturn);
+        [HttpGet("ServerError")]
+        public ActionResult GetInternalServerError()
+        {
+            var products = _dbContext.Products.Find(100);
+            var productToReturn = products.ToString(); //will throw an exception
+            return Ok(productToReturn);
 
-        //}
+        }
 
         [HttpGet("BadRequest")]
-        public ActionResult BadRequest()
+        public ActionResult getBadRequest()
         {
             return BadRequest();
 
@@ -41,7 +41,7 @@ namespace Talabat.Apis.Controllers
         [HttpGet("BadRequest/{id}")]
         public ActionResult BadRequest(int id)
         {
-            return BadRequest(StatusCodes.Status400BadRequest);
+            return Ok();
 
         }
     }

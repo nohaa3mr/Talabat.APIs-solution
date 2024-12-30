@@ -1,6 +1,10 @@
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Talabat.Apis.ErrorsHandler;
+using Talabat.Apis.ExtensionMethods;
 using Talabat.Apis.MappingProfiles;
+using Talabat.Apis.Middlewares;
 using Talabat.Core.Interfaces;
 using Talabat.Repositories.Data;
 using Talabat.Repositories.Data.DataSeed;
@@ -24,9 +28,12 @@ namespace Talabat.Apis
             {
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddAutoMapper(typeof(ProductProfile));
 
+
+
+
+
+            builder.Services.AddApplicationService();
             var app = builder.Build();
 
             using var Scope = app.Services.CreateScope();
@@ -50,12 +57,12 @@ namespace Talabat.Apis
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddlewares();
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStatusCodePagesWithRedirects("/errors/{0}");
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthorization();
 
             app.UseStaticFiles(); 

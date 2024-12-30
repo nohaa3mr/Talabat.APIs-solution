@@ -44,7 +44,7 @@ namespace Talabat.Repositories.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Discription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PictureURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductBrandId = table.Column<int>(type: "int", nullable: false),
                     ProductTypeId = table.Column<int>(type: "int", nullable: false)

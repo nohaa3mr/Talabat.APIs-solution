@@ -8,7 +8,7 @@ namespace Talabat.Apis.ErrorsHandler
 
         public ErrorApiResponse(int code , string? message = null)
         {
-            code = StatusCode;
+             StatusCode= code;
             Message = message ?? GetDefaultValue(StatusCode);
         }
 

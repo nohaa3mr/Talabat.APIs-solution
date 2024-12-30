@@ -19,7 +19,7 @@ namespace Talabat.Repositories.Interfaces.Contract
         {
            _dbContext = dbContext;
         }
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IReadOnlyList<T>> GetAllAsync()
         {
          return  await _dbContext.Set<T>().ToListAsync();
             
@@ -28,7 +28,7 @@ namespace Talabat.Repositories.Interfaces.Contract
         {
             return await _dbContext.Set<T>().FindAsync(id);  //using hashsets as unique key 
         }
-        public async Task<IEnumerable<T>> GetAllWithSpec(ISpecifications<T> spec)
+        public async Task<IReadOnlyList<T>> GetAllWithSpec(ISpecifications<T> spec)
         {
             return await ApplySpec(spec).ToListAsync();//to convert it to IEnumerable;
         }
