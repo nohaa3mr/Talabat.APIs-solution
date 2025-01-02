@@ -46,7 +46,7 @@ namespace Talabat.Apis
                 await TalabatDbContextDataSeed.SeedAsync(dbcontext);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 var logger = LoggerFactory.CreateLogger<Program>();

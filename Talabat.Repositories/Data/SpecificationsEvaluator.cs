@@ -27,6 +27,10 @@ namespace Talabat.Core.Specifications
             {
                 Query = Query.OrderByDescending(specifications.OrderByDecs);
             }
+            if (specifications.IsPaginationEnabled)
+            {
+                Query = Query.Skip(specifications.Skip).Take(specifications.Take);
+            }
             Query = specifications.Includes.Aggregate(Query, (currentQuery, IncludeExpression) => currentQuery.Include(IncludeExpression));
 
             return Query;

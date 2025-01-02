@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.Apis.ErrorsHandler;
+using Talabat.Apis.Helpers;
 using Talabat.Core.DTOs;
 using Talabat.Core.Entities;
 using Talabat.Core.Interfaces;
@@ -24,12 +25,13 @@ namespace Talabat.Apis.Controllers
             _typerepo = typerepo;
         }
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetAllProducts(string ?sort)
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetAllProducts([FromQuery]ProductSpecParams Params)
         {
-          var Spec = new ProductSpecifications(sort);
+          var Spec = new ProductSpecifications(Params);
           var products =  await _genericRepository.GetAllWithSpec(Spec);
             var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
-            return Ok(mappedAllProducts);
+            var Count = await _genericRepository.GetProductsWithCountAsync(new ProductSpecifications(Params));
+            return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
         }
 
         [HttpGet("{id}")]

@@ -17,6 +17,8 @@ namespace Talabat.Core.Interfaces
 
         public Task<IReadOnlyList<T>> GetAllWithSpec(ISpecifications<T> specifications);
         public Task<T> GetProductByIdWithSpec(ISpecifications<T> specifications);
+        public Task<int> GetProductsWithCountAsync(ISpecifications<T> specifications);
+
 
     }
 

@@ -11,7 +11,7 @@ namespace Talabat.Apis.MappingProfiles
         {
             CreateMap<Product, ProductToReturnDto>().
                 ForMember(p=>p.ProductBrand , options => options.MapFrom(S=>S.ProductBrand.Name)).
-                ForMember(p=> p.ProductType , options => options.MapFrom(S=>S.ProductType)).
+                ForMember(p=> p.ProductType , options => options.MapFrom(S=>S.ProductType.Name)).
                 ForMember(p=>p.PictureURL , options =>options.MapFrom<PictureUrlResolver>());
                 
         }

@@ -41,8 +41,10 @@ namespace Talabat.Repositories.Interfaces.Contract
         {
             return SpecificationsEvaluator<T>.QueryEvaluator(_dbContext.Set<T>(), spec);
         }
-        
-       
 
+        public async Task<int> GetProductsWithCountAsync(ISpecifications<T> specifications)
+        {
+            return await ApplySpec(specifications).CountAsync();
+        }
     }
 }
