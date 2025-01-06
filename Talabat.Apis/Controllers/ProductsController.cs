@@ -29,9 +29,9 @@ namespace Talabat.Apis.Controllers
         {
           var Spec = new ProductSpecifications(Params);
           var products =  await _genericRepository.GetAllWithSpec(Spec);
-            var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
-            var Count = await _genericRepository.GetProductsWithCountAsync(new ProductSpecifications(Params));
-            return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
+          var Count = await _genericRepository.GetProductsWithCountAsync(new ProductSpecWithCount(Params));
+          var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+          return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
         }
 
         [HttpGet("{id}")]
