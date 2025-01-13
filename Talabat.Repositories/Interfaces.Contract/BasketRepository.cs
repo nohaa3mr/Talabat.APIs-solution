@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
 using Talabat.Core.Interfaces;
@@ -16,19 +17,24 @@ namespace Talabat.Repositories.Interfaces.Contract
         {
             _database = redis.GetDatabase();
         }
-        public bool DeleteBasket(string BasketId)
+        public async Task<bool> DeleteBasket(string BasketId)
         {
-            throw new NotImplementedException();
+            return  await  _database.KeyDeleteAsync(BasketId);
         }
 
-        public Task<CustomerBasket> GetBasket(string? BasketId)
+        public async Task<CustomerBasket?> GetBasket(string? BasketId)
         {
-            throw new NotImplementedException();
+           var Basket =  await _database.StringGetAsync(BasketId);
+           return Basket.IsNull ? null :JsonSerializer.Deserialize<CustomerBasket>(Basket);
         }
 
-        public Task<CustomerBasket> UpdateBasket(CustomerBasket basket)
+        public async Task<CustomerBasket?> UpdateBasket(CustomerBasket basket)
         {
-            throw new NotImplementedException();
+            var JsonBasket = JsonSerializer.Serialize(basket);
+           var customerbasketUpdated =  await _database.StringSetAsync(basket.Id ,JsonBasket , TimeSpan.FromDays(1));
+            if (!customerbasketUpdated) return null;
+            else
+                return await GetBasket(basket.Id);
         }
     }
 }

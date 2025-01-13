@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.Apis.ErrorsHandler;
 using Talabat.Apis.Helpers;
@@ -24,6 +26,7 @@ namespace Talabat.Apis.Controllers
            _brandrepo = brandrepo;
             _typerepo = typerepo;
         }
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetAllProducts([FromQuery]ProductSpecParams Params)
         {
@@ -33,7 +36,7 @@ namespace Talabat.Apis.Controllers
           var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
           return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
         }
-
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {

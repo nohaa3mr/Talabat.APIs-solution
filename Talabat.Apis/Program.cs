@@ -10,6 +10,11 @@ using Talabat.Core.Interfaces;
 using Talabat.Repositories.Data;
 using Talabat.Repositories.Data.DataSeed;
 using Talabat.Repositories.Interfaces.Contract;
+using Talabat.Apis.Controllers;
+using Talabat.Repositories.Identity;
+using Talabat.Repositories.Identity.DataSeed;
+using Microsoft.AspNetCore.Identity;
+using Talabat.Core.Entities.Identity;
 
 namespace Talabat.Apis
 {
@@ -30,15 +35,21 @@ namespace Talabat.Apis
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+           builder.Services.AddDbContext<AppIdentityDbContext>(Options =>
+            {
+                Options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(Options =>
             {
-              var connection= builder.Configuration.GetConnectionString("Redis");
-                return ConnectionMultiplexer.Connect(connection);
+              var Connection= builder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(Connection);
+                    
             });
 
 
             builder.Services.AddApplicationService();
+            builder.Services.AddIdentity(builder.Configuration );
             var app = builder.Build();
 
             using var Scope = app.Services.CreateScope();
@@ -49,6 +60,10 @@ namespace Talabat.Apis
                 var dbcontext = Services.GetRequiredService<TalabatDbContext>();
                 await dbcontext.Database.MigrateAsync();
                 await TalabatDbContextDataSeed.SeedAsync(dbcontext);
+                var Identitydbcontext = Services.GetRequiredService<AppIdentityDbContext>();
+                await Identitydbcontext.Database.MigrateAsync();
+                var usermanager = Services.GetRequiredService<UserManager<AppUser>>();
+                await AppUserDataSeed.AddUserDataSeedAsync(usermanager);
 
             }
             catch (Exception)
@@ -65,13 +80,20 @@ namespace Talabat.Apis
                 app.UseSwaggerMiddlewares();
             }
 
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            };
             app.UseHttpsRedirection();
             app.UseStatusCodePagesWithRedirects("/errors/{0}");
             app.UseMiddleware<ExceptionMiddleware>();
+            app.UseAuthentication();
             app.UseAuthorization();
-
+    
             app.UseStaticFiles(); 
             app.MapControllers();
+
 
             app.Run();
         }

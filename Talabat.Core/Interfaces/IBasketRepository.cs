@@ -9,9 +9,9 @@ namespace Talabat.Core.Interfaces
 {
     public interface IBasketRepository
     {
-        public Task<CustomerBasket> GetBasket(string? BasketId);
-        public Task<CustomerBasket> UpdateBasket(CustomerBasket basket);
-        public bool DeleteBasket(string BasketId);
+        public Task<CustomerBasket?> GetBasket(string? BasketId);
+        public Task<CustomerBasket?> UpdateBasket(CustomerBasket basket);
+        public Task<bool> DeleteBasket(string BasketId);
 
     }
 }

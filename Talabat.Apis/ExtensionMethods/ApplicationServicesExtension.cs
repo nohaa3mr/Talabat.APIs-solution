@@ -3,6 +3,10 @@ using Talabat.Apis.MappingProfiles;
 using Talabat.Core.Interfaces;
 using Talabat.Repositories.Interfaces.Contract;
 using Talabat.Apis.ErrorsHandler;
+using Talabat.Repositories.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Talabat.Core.Entities.Identity;
 
 namespace Talabat.Apis.ExtensionMethods
 {
@@ -12,7 +16,8 @@ namespace Talabat.Apis.ExtensionMethods
         {
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddAutoMapper(typeof(ProductProfile));
-           Services.Configure<ApiBehaviorOptions>(options =>
+            Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.Configure<ApiBehaviorOptions>(options =>
 
                 options.InvalidModelStateResponseFactory = (actionContext) =>
                 {
@@ -26,6 +31,7 @@ namespace Talabat.Apis.ExtensionMethods
                     };
                     return new BadRequestObjectResult(ApiValidationError);
                 });
+
 
             return Services;
         }
