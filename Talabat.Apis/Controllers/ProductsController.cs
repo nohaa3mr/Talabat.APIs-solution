@@ -26,8 +26,9 @@ namespace Talabat.Apis.Controllers
            _brandrepo = brandrepo;
             _typerepo = typerepo;
         }
-        [Authorize]
+       
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetAllProducts([FromQuery]ProductSpecParams Params)
         {
           var Spec = new ProductSpecifications(Params);
@@ -36,8 +37,9 @@ namespace Talabat.Apis.Controllers
           var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
           return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
         }
-        [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]  
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
             var spec = new ProductSpecifications(id);
@@ -50,6 +52,7 @@ namespace Talabat.Apis.Controllers
         }
 
         [HttpGet("types")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetAllTypes()
         {
@@ -59,6 +62,8 @@ namespace Talabat.Apis.Controllers
 
 
         [HttpGet("brands")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
 
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetAllBrands()
         {

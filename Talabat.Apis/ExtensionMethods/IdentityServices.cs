@@ -14,21 +14,19 @@ namespace Talabat.Apis.ExtensionMethods
 
         public static IServiceCollection AddIdentity(this IServiceCollection Services , IConfiguration configuration)
         {
-            Services.AddAuthentication(Options =>
+            Services.AddAuthentication().AddJwtBearer(Options =>
             {
-                Options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                Options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer(Options => 
-            { Options.TokenValidationParameters = new TokenValidationParameters()
-            {   ValidateIssuer = true, 
-                ValidIssuer = configuration["Jwt:Issuer"],
-                ValidateAudience = true, 
-                ValidAudience = configuration["Jwt:Audience"],
-                ValidateLifetime = true ,
-                ValidateIssuerSigningKey =true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt : Key"]))
-            }; 
+                Options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                };
+            
             
             });
             Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();

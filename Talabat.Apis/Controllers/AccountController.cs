@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Talabat.Apis.ErrorsHandler;
+using Talabat.Apis.Helpers;
 using Talabat.Core.DTOs;
 using Talabat.Core.Entities.Identity;
 using Talabat.Core.IServices;
@@ -11,12 +16,14 @@ namespace Talabat.Apis.Controllers
     public class AccountController : ApiBaseController
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager , ITokenService tokenService)
+        public AccountController(UserManager<AppUser> userManager, IMapper mapper,  SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _mapper = mapper;
             _signInManager = signInManager;
             _tokenService = tokenService;
         }
@@ -30,7 +37,6 @@ namespace Talabat.Apis.Controllers
                 PhoneNumber = model.PhoneNumber,
                 UserName = model.Email.Split('@')[0],
                 DisplayName = model.DisplayName,
-                Address = model.Address
             };
             var Result = await _userManager.CreateAsync(user, model.Password);
 
@@ -39,7 +45,7 @@ namespace Talabat.Apis.Controllers
             {
                 DisplayName = model.DisplayName,
                 Email = model.Email,
-                Token =await _tokenService.GetTokenAsync(user, _userManager)
+                Token = await _tokenService.GetTokenAsync(user, _userManager)
 
             };
             return Ok(ResultDto);
@@ -50,7 +56,7 @@ namespace Talabat.Apis.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO model)
         {
-            var User =await _userManager.FindByEmailAsync(model.Email);
+            var User = await _userManager.FindByEmailAsync(model.Email);
             if (User is null) return Unauthorized(new ErrorApiResponse(401));
 
             var Result = await _signInManager.CheckPasswordSignInAsync(User, model.Password, false);
@@ -65,5 +71,45 @@ namespace Talabat.Apis.Controllers
             };
             return Ok(ResultDto);
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("CurrentUser")]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var Email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(Email);
+            var obj = new UserDTO()
+            {
+                DisplayName = user.DisplayName,
+                Email = Email,
+                Token = await _tokenService.GetTokenAsync(user, _userManager)
+            };
+            return Ok(obj);
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("getUserAddress")]
+        public async Task<ActionResult<AddressDTO>> GetUserAddress()
+        {
+            var user = await _userManager.GetAdressByEmailAsync(User);
+            var MappedAddress = _mapper.Map<Address, AddressDTO>(user.Address); 
+            return Ok(MappedAddress);
+              
+        }
+        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut("Address")]
+
+        public async Task<ActionResult<AddressDTO>> UpateAddressDto(AddressDTO address)
+        {
+            var user = await _userManager.GetAdressByEmailAsync(User);
+            var MappedAddress =  _mapper.Map<AddressDTO, Address>(address);
+            MappedAddress.Id = user.Address.Id;
+            user.Address = MappedAddress;
+            var Result = await _userManager.UpdateAsync(user);
+            if (!Result.Succeeded) return BadRequest(new ErrorApiResponse(400));
+            return Ok(MappedAddress);
+
+        }
+
+           
+
     }
 }
