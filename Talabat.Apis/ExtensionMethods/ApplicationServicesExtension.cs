@@ -3,10 +3,9 @@ using Talabat.Apis.MappingProfiles;
 using Talabat.Core.Interfaces;
 using Talabat.Repositories.Interfaces.Contract;
 using Talabat.Apis.ErrorsHandler;
-using Talabat.Repositories.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Talabat.Core.Entities.Identity;
+using Talabat.Repositories.UnitOfWork;
+using Talabat.Core.IServices;
+using Talabat.Services.OrderService;
 
 namespace Talabat.Apis.ExtensionMethods
 {
@@ -17,6 +16,9 @@ namespace Talabat.Apis.ExtensionMethods
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddAutoMapper(typeof(ProductProfile));
             Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            Services.AddScoped<IOrderService, OrderService>();
+
             Services.Configure<ApiBehaviorOptions>(options =>
 
                 options.InvalidModelStateResponseFactory = (actionContext) =>

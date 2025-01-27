@@ -46,5 +46,22 @@ namespace Talabat.Repositories.Interfaces.Contract
         {
             return await ApplySpec(specifications).CountAsync();
         }
+
+        public async Task AddAsync(T item)
+        {
+         await   _dbContext.Set<T>().AddAsync(item);
+        }
+
+        public async void DeleteAsync(T item)
+        {
+             _dbContext.Set<T>().Remove(item);
+        }
+
+        public void UpdateAsync(T item)
+        {
+            _dbContext.Set<T>().Update(item);
+
+
+        }
     }
 }

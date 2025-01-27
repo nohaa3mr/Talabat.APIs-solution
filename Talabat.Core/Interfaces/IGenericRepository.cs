@@ -19,7 +19,9 @@ namespace Talabat.Core.Interfaces
         public Task<T> GetProductByIdWithSpec(ISpecifications<T> specifications);
         public Task<int> GetProductsWithCountAsync(ISpecifications<T> specifications);
 
-
+       public Task AddAsync(T item);
+        public void DeleteAsync(T item);
+        public void UpdateAsync(T item);
     }
 
 }

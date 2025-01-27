@@ -8,23 +8,19 @@ using Talabat.Core.DTOs;
 using Talabat.Core.Entities;
 using Talabat.Core.Interfaces;
 using Talabat.Core.Specifications;
+using Talabat.Repositories.Interfaces.Contract;
 namespace Talabat.Apis.Controllers
 {
    
     public class ProductsController : ApiBaseController
     {
-        private readonly IGenericRepository<Product> _genericRepository;
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<ProductBrand> _brandrepo;
-        private readonly IGenericRepository<ProductType> _typerepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductsController(IGenericRepository<Product> genericRepository , IMapper mapper,
-            IGenericRepository<ProductBrand> brandrepo , IGenericRepository<ProductType> typerepo)
+        public ProductsController(IMapper mapper , IUnitOfWork unitOfWork)
         {
-           _genericRepository = genericRepository;
             _mapper = mapper;
-           _brandrepo = brandrepo;
-            _typerepo = typerepo;
+            _unitOfWork = unitOfWork;
         }
        
         [HttpGet]
@@ -32,8 +28,8 @@ namespace Talabat.Apis.Controllers
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetAllProducts([FromQuery]ProductSpecParams Params)
         {
           var Spec = new ProductSpecifications(Params);
-          var products =  await _genericRepository.GetAllWithSpec(Spec);
-          var Count = await _genericRepository.GetProductsWithCountAsync(new ProductSpecWithCount(Params));
+          var products =  await _unitOfWork.Repository<Product>().GetAllWithSpec(Spec);
+          var Count = await _unitOfWork.Repository<Product>().GetProductsWithCountAsync(new ProductSpecWithCount(Params));
           var mappedAllProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
           return Ok(new Pagination<ProductToReturnDto> (Params.Pagesize , Params.PageIndex , Count ,mappedAllProducts));
         }
@@ -43,7 +39,7 @@ namespace Talabat.Apis.Controllers
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
             var spec = new ProductSpecifications(id);
-            var product = await _genericRepository.GetProductByIdWithSpec(spec);
+            var product = await _unitOfWork.Repository<Product>().GetProductByIdWithSpec(spec);
             if (product is null)
            return NotFound(new ErrorApiResponse(400));
 
@@ -56,7 +52,7 @@ namespace Talabat.Apis.Controllers
 
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetAllTypes()
         {
-            var Types = await _typerepo.GetAllAsync();
+            var Types = await _unitOfWork.Repository<ProductType>().GetAllAsync();
             return Ok(Types);
         }
 
@@ -67,7 +63,7 @@ namespace Talabat.Apis.Controllers
 
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetAllBrands()
         {
-            var brands = await _brandrepo.GetAllAsync();
+            var brands = await _unitOfWork.Repository<ProductBrand>().GetAllAsync();
             return Ok(brands);
         }
     }

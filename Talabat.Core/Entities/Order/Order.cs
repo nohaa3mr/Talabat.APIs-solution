@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Talabat.Core.Entities.Order
 {
-    public class Order:BaseEntity
+    public class Order: BaseEntity
     {
-        public Order(string buyerEmail, DateTimeOffset orderDate, OrderAddress shippingAddress, ICollection<OrderItem> orderItems,DeliveryMethod deliveryMethod, decimal subTotal  )
+        public Order(string buyerEmail, OrderAddress shippingAddress, ICollection<OrderItem> orderItems,DeliveryMethod deliveryMethod, decimal subTotal  )
         {
             BuyerEmail = buyerEmail;
             ShippingAddress = shippingAddress;
