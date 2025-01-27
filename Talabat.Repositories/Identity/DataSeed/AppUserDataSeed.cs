@@ -20,7 +20,7 @@ namespace Talabat.Repositories.Identity.DataSeed
                     Email = "nohaa3mr@gmail.com",
                     UserName = "Noha.Amr",
                     PhoneNumber = "123456790" , 
-
+                    Address = new Address() { City = "ElObour" , Country="Egypt" , Street="El Shabab" },
                 };
                 await userManager.CreateAsync(AppUser, "P@ssw0rd");
             }

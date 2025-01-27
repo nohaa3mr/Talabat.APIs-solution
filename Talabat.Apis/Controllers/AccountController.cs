@@ -31,6 +31,10 @@ namespace Talabat.Apis.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO model)
         {
+            if (CheckEmailExist(model.Email).Result.Value)
+            {
+                return BadRequest(new ErrorApiResponse(400));
+            }
             var user = new AppUser()
             {
                 Email = model.Email,
@@ -89,27 +93,17 @@ namespace Talabat.Apis.Controllers
         [HttpGet("getUserAddress")]
         public async Task<ActionResult<AddressDTO>> GetUserAddress()
         {
+            //var user = await _userManager.GetAdressByEmailAsync(User);
+            //var MappedAddress = _mapper.Map<Address, AddressDTO>(user.Address); 
+            //return Ok(MappedAddress);
             var user = await _userManager.GetAdressByEmailAsync(User);
-            var MappedAddress = _mapper.Map<Address, AddressDTO>(user.Address); 
-            return Ok(MappedAddress);
-              
+            if (user is null) return BadRequest(new ErrorApiResponse(StatusCodes.Status400BadRequest));
+            return Ok(_mapper.Map<AddressDTO>(user.Address));
         }
-        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("Address")]
-
-        public async Task<ActionResult<AddressDTO>> UpateAddressDto(AddressDTO address)
+        [HttpGet("emailExists")]
+        public async Task<ActionResult<bool>> CheckEmailExist(string email)
         {
-            var user = await _userManager.GetAdressByEmailAsync(User);
-            var MappedAddress =  _mapper.Map<AddressDTO, Address>(address);
-            MappedAddress.Id = user.Address.Id;
-            user.Address = MappedAddress;
-            var Result = await _userManager.UpdateAsync(user);
-            if (!Result.Succeeded) return BadRequest(new ErrorApiResponse(400));
-            return Ok(MappedAddress);
-
+            return await _userManager.FindByEmailAsync(email) is not null;
         }
-
-           
-
     }
 }

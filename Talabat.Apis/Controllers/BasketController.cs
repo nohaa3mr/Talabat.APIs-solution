@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.Apis.ErrorsHandler;
+using Talabat.Apis.Helpers;
 using Talabat.Core.Entities;
 using Talabat.Core.Interfaces;
 
@@ -11,10 +13,12 @@ namespace Talabat.Apis.Controllers
     public class BasketController : ApiBaseController
     {
         private readonly IBasketRepository _basket;
+        private readonly IMapper mapper;
 
-        public BasketController(IBasketRepository basket)
+        public BasketController(IBasketRepository basket , IMapper mapper)
         {
             _basket = basket;
+            this.mapper = mapper;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerBasket>> GetBasket(string id)
@@ -27,9 +31,10 @@ namespace Talabat.Apis.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasket customerBasket)
+        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDTO customerBasket)
         {
-            var basket = await _basket.UpdateBasket(customerBasket);
+            var MappedBasket = mapper.Map<CustomerBasketDTO, CustomerBasket>(customerBasket);
+            var basket = await _basket.UpdateBasket(MappedBasket);
             if (basket is null) return BadRequest(new ErrorApiResponse(400));
           else  return Ok(basket);
 

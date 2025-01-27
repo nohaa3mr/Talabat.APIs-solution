@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.Order;
 
 namespace Talabat.Repositories.Data.DataSeed
 {
@@ -40,30 +41,6 @@ namespace Talabat.Repositories.Data.DataSeed
                     await dbContext.SaveChangesAsync();
                 }
             }
-
-            #region !st try
-            //if (!dbContext.Products.Any())
-            //{
-            //    var ProductData = File.ReadAllText("../Talabat.Repositories/Data/DataSeed/products.json");
-            //    var products = JsonSerializer.Deserialize<List<Product>>(ProductData);
-                //if (products?.Count > 0)
-                //{
-                //  foreach (var product in products)
-                //  {
-                //          //product.Discription = product.Discription ?? "No description available";
-                //          //product.PictureURL = product.Discription ?? " PictureURL isn't available";
-                //          await dbContext.Set<Product>().AddAsync(product);
-                //  }
-                //  await dbContext.SaveChangesAsync();
-                //}
-                //3.Seed DataBase
-                //if (products is not null && products?.Count > 0)
-                //{
-                //    await dbContext.AddRangeAsync(products);
-                //    await dbContext.SaveChangesAsync();
-                //}
-          //  }
-            #endregion
             if (dbContext.Products.Count() == 0)
             {
                 //1.Read All Data From Json File.
@@ -86,6 +63,30 @@ namespace Talabat.Repositories.Data.DataSeed
                     await dbContext.SaveChangesAsync();
                 }
             }
+
+            if (!dbContext.DeliveryMethod.Any())
+            {
+                //1.Read All Data From Json File.
+                var DeliveryData = File.ReadAllText("../Talabat.Repositories/Data/DataSeed/delivery.json");
+
+
+                //2. Convert Data from Json to List<T>
+                var Delivery = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryData);
+                //3.Seed DataBase
+                if (Delivery is not null && DeliveryData?.Count() > 0)
+                {
+                    foreach (var deliveryMethod in Delivery)
+                    {
+                       
+                        await dbContext.Set<DeliveryMethod>().AddAsync(deliveryMethod);
+                    }
+
+                    await dbContext.AddRangeAsync(Delivery);
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+
+
         }
     }
 }

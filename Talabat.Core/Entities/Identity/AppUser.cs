@@ -11,5 +11,6 @@ namespace Talabat.Core.Entities.Identity
     {
         public string DisplayName { get; set; }
         public Address Address { get; set; }
+
     }
 }
