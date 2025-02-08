@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.Apis.ErrorsHandler;
@@ -21,6 +23,7 @@ namespace Talabat.Apis.Controllers
             this.mapper = mapper;
         }
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<CustomerBasket>> GetBasket(string id)
         {
             var basket = await _basket.GetBasket(id);
@@ -30,7 +33,9 @@ namespace Talabat.Apis.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDTO customerBasket)
         {
             var MappedBasket = mapper.Map<CustomerBasketDTO, CustomerBasket>(customerBasket);
@@ -41,6 +46,8 @@ namespace Talabat.Apis.Controllers
         }
 
         [HttpDelete]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public async Task<ActionResult<bool>> DeleteBasket(string id)
         {
             var basket = await _basket.DeleteBasket(id);

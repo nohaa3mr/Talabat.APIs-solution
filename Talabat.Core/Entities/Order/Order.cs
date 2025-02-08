@@ -8,7 +8,11 @@ namespace Talabat.Core.Entities.Order
 {
     public class Order: BaseEntity
     {
-        public Order(string buyerEmail, OrderAddress shippingAddress, ICollection<OrderItem> orderItems,DeliveryMethod deliveryMethod, decimal subTotal  )
+        public Order()
+        {
+            
+        }
+        public Order(string buyerEmail, OrderAddress shippingAddress, ICollection<OrderItem> orderItems,DeliveryMethod deliveryMethod, decimal subTotal)
         {
             BuyerEmail = buyerEmail;
             ShippingAddress = shippingAddress;
@@ -16,14 +20,10 @@ namespace Talabat.Core.Entities.Order
             OrderItems = orderItems;
             SubTotal = subTotal;
         }
-        public Order()
-        {
-            
-        }
 
         public string BuyerEmail { get; set; }
         public DateTimeOffset OrderDate { get; set; } =DateTimeOffset.Now;
-        public OrderStatus OrderStatus { get; set; }
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
         public OrderAddress ShippingAddress { get; set; }
         public DeliveryMethod deliveryMethod { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();

@@ -30,7 +30,7 @@ namespace Talabat.Repositories.Interfaces.Contract
         }
         public async Task<IReadOnlyList<T>> GetAllWithSpec(ISpecifications<T> spec)
         {
-            return await ApplySpec(spec).ToListAsync();//to convert it to IEnumerable;
+           return await ApplySpec(spec).ToListAsync();//to convert it to IEnumerable;
         }
 
         public async Task<T> GetProductByIdWithSpec(ISpecifications<T> spec)
@@ -50,6 +50,7 @@ namespace Talabat.Repositories.Interfaces.Contract
         public async Task AddAsync(T item)
         {
          await   _dbContext.Set<T>().AddAsync(item);
+
         }
 
         public async void DeleteAsync(T item)

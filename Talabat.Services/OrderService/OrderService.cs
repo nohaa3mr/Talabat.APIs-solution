@@ -16,18 +16,20 @@ namespace Talabat.Services.OrderService
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGenericRepository<Order> _orderRepo;
 
-        public OrderService(IBasketRepository basketRepository , IUnitOfWork unitOfWork )
+        public OrderService(IBasketRepository basketRepository , IUnitOfWork unitOfWork , IGenericRepository<Order> orderRepo)
         {
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
+            this._orderRepo = orderRepo;
         }
 
         public async Task<Order?> CreateOrderAsync(string buyerEmail, string BasketId, int DeliveryMethodId, OrderAddress orderAddress)
         {
             var basket =await _basketRepository.GetBasket(BasketId);
             var OrderItems = new List<OrderItem>();
-            if (basket?.Items.Count > 0)
+            if (basket?.Items.Count() > 0)
             {
                 foreach (var item in basket.Items)
                 {
@@ -42,9 +44,10 @@ namespace Talabat.Services.OrderService
             var DeliveryMethod =await _unitOfWork.Repository<DeliveryMethod>().GetById(DeliveryMethodId);
             //now create the order 
             var Order = new Order(buyerEmail, orderAddress, OrderItems, DeliveryMethod, SumTotal);
-            await _unitOfWork.Repository<Order>().AddAsync(Order);
-            var Result =   await _unitOfWork.CompleteAsync();
-            if (Result <= 0) return null ;
+            // await _unitOfWork.Repository<Order>().AddAsync(Order);
+            //   await _unitOfWork.CompleteAsync();
+            await _orderRepo.AddAsync(Order);
+            //if (Result <= 0) return null ;
             
                 return Order;
             

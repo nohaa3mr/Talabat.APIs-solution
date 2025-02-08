@@ -21,6 +21,19 @@ namespace Talabat.Apis.MappingProfiles
             CreateMap<BasketItems, BasketItemsDTO>().ReverseMap();
             CreateMap< AddressDTO , OrderAddress>().ReverseMap();
 
+            CreateMap<Order, OrderToReturnDto>()
+                .ForMember(o => o.deliveryMethod, O => O.MapFrom(x => x.deliveryMethod.ShortName))
+                .ForMember(O => O.deliveryMethodCost, options => options.MapFrom(O => O.deliveryMethod.Cost));
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(x => x.ProductId, Options => Options.MapFrom(p => p.ProductItemOrdered.ProductId))
+                .ForMember(x => x.ProductName, Options => Options.MapFrom(p => p.ProductItemOrdered.ProductName))
+                .ForMember(x => x.PictureUrl, Options => Options.MapFrom(p => p.ProductItemOrdered.PictureUrl))
+                .ForMember(p => p.PictureUrl, options => options.MapFrom<OrderItemPictureResolver>());
+
+
+
+
+
         }
     }
 }

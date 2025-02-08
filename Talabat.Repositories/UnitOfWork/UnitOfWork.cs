@@ -14,11 +14,11 @@ namespace Talabat.Repositories.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly TalabatDbContext _dbContext;
-        private Hashtable _repository;
+        private readonly Hashtable _repository;
 
         public UnitOfWork(TalabatDbContext dbContext)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
             _repository = new Hashtable();
         }
         public async Task<int> CompleteAsync()
