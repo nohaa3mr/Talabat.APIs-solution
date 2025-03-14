@@ -22,7 +22,6 @@ namespace Talabat.Services.TokenService
             _configuration = configuration;
         }
         public async Task<string> GetTokenAsync(AppUser user , UserManager<AppUser> userManager)
-        
         {
             //to make it more authenticated.
             var AuthClaims = new List<Claim>()

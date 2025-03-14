@@ -18,6 +18,7 @@ namespace Talabat.Apis.ExtensionMethods
             {
                 Options.TokenValidationParameters = new TokenValidationParameters()
                 {
+                    AuthenticationType= JwtBearerDefaults.AuthenticationScheme,
                     ValidateIssuer = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidateAudience = true,
